@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface TaskRepository extends JpaRepository<Task, Long> {
-    List<Task> findByTitleLikeIgnoreCase(String title);
+    List<Task> findByTitleContainsIgnoreCase(String title);
 }

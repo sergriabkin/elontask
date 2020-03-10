@@ -32,7 +32,15 @@ public class TasksServiceImpl implements TasksService {
 
     @Override
     public List<Task> getTasksByTitle(String title) {
-        return repository.findByTitleLikeIgnoreCase(title);
+        return repository.findByTitleContainsIgnoreCase(title);
+    }
+
+    @Override
+    public List<Task> getDisplayedTasks(String title) {
+        if (title.isBlank()){
+            return getAllTasks();
+        }
+        return getTasksByTitle(title);
     }
 
     @Override
