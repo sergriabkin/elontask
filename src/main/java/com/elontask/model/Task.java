@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import java.util.Objects;
 
 @Data
 @NoArgsConstructor
@@ -18,5 +19,15 @@ public class Task {
     private Long id;
     private String title;
     private String description;
-    private int priority;
+    private int priority = 3;
+
+    public Task(String title, String description) {
+        this.title = title;
+        this.description = description;
+    }
+
+    public boolean isPersisted(){
+        return Objects.nonNull(id);
+    }
+
 }
