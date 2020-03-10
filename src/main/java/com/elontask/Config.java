@@ -13,8 +13,8 @@ public class Config {
     @Bean
     public CommandLineRunner loadData(TaskRepository repository) {
         return args -> {
-            repository.save(new Task(1, "wake up", "at 6:30", 5));
-            repository.save(new Task(2, "take a brush and put a little makeup", "at 6:40", 4));
+            repository.save(new Task(1L, "wake up", "at 6:30", 5));
+            repository.save(new Task(2L, "take a brush and put a little makeup", "at 6:40", 4));
             repository.findAll().forEach(task -> log.info("task saved: " + task));
         };
     }

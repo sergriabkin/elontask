@@ -15,7 +15,7 @@ import javax.persistence.Id;
 public class Task {
     @Id
     @GeneratedValue
-    private long id;
+    private Long id;
     private String title;
     private String description;
     private int priority;
