@@ -7,11 +7,13 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.select.Select;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.value.ValueChangeMode;
 import com.vaadin.flow.router.Route;
 
 import javax.annotation.PostConstruct;
+import java.util.stream.IntStream;
 
 @Route
 public class MainView extends VerticalLayout {
@@ -19,21 +21,23 @@ public class MainView extends VerticalLayout {
     private final TasksService service;
     private final TaskEditor editor;
     private Grid<Task> grid = new Grid<>(Task.class);
-    private TextField filter = new TextField();
+    private TextField titleFilter = new TextField();
+    private Select<Integer> maxPriorityFilter = new Select<>();
     private Button newTaskButton = new Button("Add new task", VaadinIcon.PLUS.create());
 
     public MainView(TasksService service, TaskEditor editor) {
         this.service = service;
         this.editor = editor;
-        setOnChangeTaskEditorStrategy(filter);
+        setOnChangeTaskEditorStrategy();
     }
 
     @PostConstruct
     protected void init() {
         initGrid();
-        initFilter();
+        initTitleFilter();
+        initMaxPriorityFilter();
         initNewTaskButton();
-        HorizontalLayout actionsLayout = new HorizontalLayout(filter, newTaskButton);
+        HorizontalLayout actionsLayout = new HorizontalLayout(maxPriorityFilter, titleFilter, newTaskButton);
         add(actionsLayout, grid, editor);
     }
 
@@ -42,27 +46,35 @@ public class MainView extends VerticalLayout {
         grid.setHeight("300px");
         grid.setColumns("id", "title", "description", "priority");
         grid.getColumnByKey("id").setWidth("50px").setFlexGrow(0);
-        drawGrid("");
+        drawGrid("", Task.MIN_PRIORITY);
     }
 
-    protected void initFilter() {
-        filter.setPlaceholder("Filter by title");
-        filter.setValueChangeMode(ValueChangeMode.EAGER);
-        filter.addValueChangeListener(e -> drawGrid(e.getValue()));
+    protected void initTitleFilter() {
+        titleFilter.setPlaceholder("Filter by title");
+        titleFilter.setValueChangeMode(ValueChangeMode.EAGER);
+        titleFilter.addValueChangeListener(e -> drawGrid(e.getValue(), maxPriorityFilter.getValue()));
+    }
+
+    protected void initMaxPriorityFilter() {
+        maxPriorityFilter.setPlaceholder("Max priority");
+        maxPriorityFilter.setItems(IntStream.rangeClosed(Task.MIN_PRIORITY, Task.MAX_PRIORITY).boxed());
+        maxPriorityFilter.setValue(Task.MIN_PRIORITY);
+        maxPriorityFilter.setMaxWidth("100px");
+        maxPriorityFilter.addValueChangeListener(e -> drawGrid(titleFilter.getValue(), e.getValue()));
     }
 
     protected void initNewTaskButton() {
         newTaskButton.addClickListener(e -> editor.editTask(new Task("", "")));
     }
 
-    private void drawGrid(String filterText) {
-        grid.setItems(service.getDisplayedTasks(filterText));
+    private void drawGrid(String titleFilterText, int priorityFilterValue) {
+        grid.setItems(service.getDisplayedTasks(titleFilterText, priorityFilterValue));
     }
 
-    private void setOnChangeTaskEditorStrategy(TextField filter) {
+    private void setOnChangeTaskEditorStrategy() {
         editor.setOnChangeStrategy(() -> {
             editor.setVisible(false);
-            drawGrid(filter.getValue());
+            drawGrid(titleFilter.getValue(), maxPriorityFilter.getValue());
         });
     }
 

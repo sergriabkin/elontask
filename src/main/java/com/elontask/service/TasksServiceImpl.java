@@ -5,6 +5,7 @@ import com.elontask.repository.TaskRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class TasksServiceImpl implements TasksService {
@@ -31,16 +32,31 @@ public class TasksServiceImpl implements TasksService {
     }
 
     @Override
-    public List<Task> getTasksByTitle(String title) {
-        return repository.findByTitleContainsIgnoreCase(title);
+    public List<Task> getDisplayedTasks(String title, int maxPriority) {
+        if (title.isBlank() && maxPriority == Task.MIN_PRIORITY){
+            return getAllTasks();
+        }
+        return getListsIntersection(getTasksByTitle(title), getTasksByMaxPriority(maxPriority));
     }
 
-    @Override
-    public List<Task> getDisplayedTasks(String title) {
+    private List<Task> getTasksByTitle(String title) {
         if (title.isBlank()){
             return getAllTasks();
         }
-        return getTasksByTitle(title);
+        return repository.findByTitleContainsIgnoreCase(title);
+    }
+
+    private List<Task> getTasksByMaxPriority(int priority) {
+        if (priority == Task.MIN_PRIORITY){
+            return getAllTasks();
+        }
+        return repository.findByPriorityGreaterThanEqual(priority);
+    }
+
+    private List<Task> getListsIntersection(List<Task> firstList, List<Task> secondList) {
+        return firstList.stream()
+                .filter(secondList::contains)
+                .collect(Collectors.toList());
     }
 
     @Override
