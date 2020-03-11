@@ -40,10 +40,6 @@ public class TaskEditor extends VerticalLayout implements KeyNotifier {
         this.service = service;
     }
 
-    public void setOnChangeStrategy(Runnable onChangeStrategy) {
-        this.onChangeStrategy = onChangeStrategy;
-    }
-
     @PostConstruct
     protected void init() {
         add(title, description, initActionButtons());
@@ -66,6 +62,8 @@ public class TaskEditor extends VerticalLayout implements KeyNotifier {
     }
 
     private void save(){
+        formTask.setTitle(title.getValue());
+        formTask.setDescription(description.getValue());
         service.addTask(formTask);
         onChangeStrategy.run();
     }
@@ -94,6 +92,10 @@ public class TaskEditor extends VerticalLayout implements KeyNotifier {
         setVisible(true);
         title.focus();
 
+    }
+
+    public void setOnChangeStrategy(Runnable onChangeStrategy) {
+        this.onChangeStrategy = onChangeStrategy;
     }
 
 }
