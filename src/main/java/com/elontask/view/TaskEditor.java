@@ -73,15 +73,8 @@ public class TaskEditor extends VerticalLayout implements KeyNotifier {
     }
 
     protected void save() {
-        service.addTask(updateFromFields(formTask));
+        service.addTask(formTask);
         onChangeStrategy.run();
-    }
-
-    private Task updateFromFields(Task task) {
-        task.setTitle(title.getValue());
-        task.setDescription(description.getValue());
-        task.setPriority(priority.getValue());
-        return task;
     }
 
     public void editTask(Task task) {
@@ -98,10 +91,9 @@ public class TaskEditor extends VerticalLayout implements KeyNotifier {
             cancel.setVisible(false);
         }
 
-        binder.setBean(task);
+        binder.setBean(formTask);
         setVisible(true);
         title.focus();
-
     }
 
     public void setOnChangeStrategy(Runnable onChangeStrategy) {
