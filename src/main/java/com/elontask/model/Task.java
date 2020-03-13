@@ -23,7 +23,7 @@ public class Task {
     public static final int MAX_PRIORITY = 5;
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
@@ -45,8 +45,7 @@ public class Task {
         this.description = description;
     }
 
-    public Task(Long id, String title, String description, @Max(MAX_PRIORITY) @Min(MIN_PRIORITY) int priority) {
-        this.id = id;
+    public Task(String title, String description, @Max(MAX_PRIORITY) @Min(MIN_PRIORITY) int priority) {
         this.title = title;
         this.description = description;
         this.priority = priority;

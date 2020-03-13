@@ -3,10 +3,12 @@ package com.elontask.model;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import javax.persistence.*;
 
 @Data
+@ToString(exclude = "task")
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
@@ -14,7 +16,7 @@ import javax.persistence.*;
 public class Step {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column
@@ -27,10 +29,5 @@ public class Step {
     public Step(String instruction, Task task) {
         this.instruction = instruction;
         this.task = task;
-    }
-
-    @Override
-    public String toString() {
-        return task.getTitle() + " : " + instruction;
     }
 }
