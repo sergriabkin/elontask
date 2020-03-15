@@ -23,6 +23,7 @@ import java.util.stream.IntStream;
 public class TaskEditor extends VerticalLayout implements KeyNotifier {
 
     private final TasksService service;
+    private final StepsPanel stepsPanel;
 
     private Task formTask;
 
@@ -37,15 +38,16 @@ public class TaskEditor extends VerticalLayout implements KeyNotifier {
     private Button cancel = new Button("Cancel");
     private Button delete = new Button("Delete", VaadinIcon.TRASH.create());
 
-    public TaskEditor(TasksService service) {
+    public TaskEditor(TasksService service, StepsPanel stepsPanel) {
         this.service = service;
+        this.stepsPanel = stepsPanel;
     }
 
     @PostConstruct
     protected void init() {
         initPriority();
         initActionButtons();
-        add(title, description, priority, new HorizontalLayout(save, cancel, delete));
+        add(title, description, priority, new HorizontalLayout(save, cancel, delete), stepsPanel);
         binder.bindInstanceFields(this);
         addKeyPressListener(Key.ENTER, e -> save());
         setSpacing(true);
@@ -90,6 +92,9 @@ public class TaskEditor extends VerticalLayout implements KeyNotifier {
             formTask = task;
             cancel.setVisible(false);
         }
+
+        formTask.setSteps(task.getSteps());
+        stepsPanel.drawSteps(task.getSteps());
 
         binder.setBean(formTask);
         setVisible(true);
